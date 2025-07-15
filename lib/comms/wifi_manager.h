@@ -19,29 +19,7 @@ int retry_count;
 
 extern EventGroupHandle_t wifi_event_group;
 
-typedef enum
-{
-    WIFI_CMD_SET_SSID_PASSWORD,
-} wifi_cmd_type_t;
-
-typedef struct
-{
-    wifi_cmd_type_t cmd;
-
-    union
-    {
-        struct
-        {
-            char ssid[32];
-            char password[64];
-        } connect_params;
-
-    } data;
-
-} wifi_cmd_t;
-
 void wifi_manager_init(void);
 
-BaseType_t wifi_manager_send_cmd(wifi_cmd_t *cmd);
-
+void wifi_set_ssid_password(const char *ssid, const char *password);
 #endif // WIFI_MANAGER_H

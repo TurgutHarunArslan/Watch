@@ -90,44 +90,21 @@ static void wifi_ip_event_handler(void *arg, esp_event_base_t event_base,
     }
 }
 
-static void wifi_manager_task(void *pvParameters)
+void wifi_set_ssid_password(const char *ssid, const char *password)
 {
-    wifi_cmd_t cmd;
-    while (1)
-    {
-        if (xQueueReceive(wifi_queue, &cmd, portMAX_DELAY))
-        {
-            wifi_config_t wifi_config = {0};
-            strncpy((char *)wifi_config.sta.ssid, cmd.data.connect_params.ssid, sizeof(wifi_config.sta.ssid));
-            strncpy((char *)wifi_config.sta.password, cmd.data.connect_params.password, sizeof(wifi_config.sta.password));
+    wifi_config_t wifi_config = {0};
+    strncpy((char *)wifi_config.sta.ssid, ssid, sizeof(wifi_config.sta.ssid));
+    strncpy((char *)wifi_config.sta.password, password, sizeof(wifi_config.sta.password));
 
-            esp_wifi_set_config(WIFI_IF_STA, &wifi_config);
-            esp_wifi_connect();
+    esp_wifi_set_config(WIFI_IF_STA, &wifi_config);
+    esp_wifi_connect();
 
-            save_credentials_from_wifi_config(&wifi_config);
-            switch (cmd.cmd)
-            {
-            case WIFI_CMD_SET_SSID_PASSWORD:
-                wifi_config_t wifi_config = {0};
-                strncpy((char *)wifi_config.sta.ssid, cmd.data.connect_params.ssid, sizeof(wifi_config.sta.ssid));
-                strncpy((char *)wifi_config.sta.password, cmd.data.connect_params.password, sizeof(wifi_config.sta.password));
-
-                esp_wifi_set_config(WIFI_IF_STA, &wifi_config);
-                esp_wifi_connect();
-
-                save_credentials_from_wifi_config(&wifi_config);
-                break;
-            default:
-                break;
-            }
-        }
-    }
+    save_credentials_from_wifi_config(&wifi_config);
 }
 
 void wifi_manager_init(void)
 {
     wifi_event_group = xEventGroupCreate();
-    wifi_queue = xQueueCreate(WIFI_MANAGER_QUEUE_LEN, sizeof(wifi_cmd_t));
 
     esp_netif_init();
     esp_event_loop_create_default();
@@ -144,14 +121,7 @@ void wifi_manager_init(void)
                                   stored_password, sizeof(stored_password)))
     {
         ESP_LOGI(TAG, "Loaded Wi-Fi config from NVS: SSID='%s'", stored_ssid);
-
-        wifi_config_t wifi_config = {0};
-        strncpy((char *)wifi_config.sta.ssid, stored_ssid, sizeof(wifi_config.sta.ssid));
-        strncpy((char *)wifi_config.sta.password, stored_password, sizeof(wifi_config.sta.password));
-
-        esp_wifi_set_config(WIFI_IF_STA, &wifi_config);
-
-        esp_wifi_connect();
+        wifi_set_ssid_password(stored_ssid, stored_password);
     }
     else
     {
@@ -161,14 +131,5 @@ void wifi_manager_init(void)
     esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_ip_event_handler, NULL);
     esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &wifi_ip_event_handler, NULL);
 
-    xTaskCreate(wifi_manager_task, "wifi_queue_task", 4096, NULL, 5, NULL);
-
     ESP_LOGI(TAG, "Wi-Fi initialized and modem sleep enabled");
-}
-
-BaseType_t wifi_manager_send_cmd(const wifi_cmd_t *cmd)
-{
-    if (!wifi_queue)
-        return pdFAIL;
-    return xQueueSend(wifi_queue, cmd, portMAX_DELAY);
 }
