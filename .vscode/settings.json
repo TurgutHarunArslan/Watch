@@ -3,6 +3,8 @@
         "esp_wifi.h": "c",
         "stdio.h": "c",
         "event_groups.h": "c",
-        "esp_sntp.h": "c"
+        "esp_sntp.h": "c",
+        "wifi_manager.h": "c",
+        "esp_wifi_types.h": "c"
     }
 }
