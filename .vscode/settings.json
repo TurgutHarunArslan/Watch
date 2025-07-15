@@ -5,6 +5,10 @@
         "event_groups.h": "c",
         "esp_sntp.h": "c",
         "wifi_manager.h": "c",
-        "esp_wifi_types.h": "c"
+        "esp_wifi_types.h": "c",
+        "array": "c",
+        "string": "c",
+        "string_view": "c",
+        "span": "c"
     }
 }

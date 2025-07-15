@@ -11,6 +11,7 @@ void time_sync_callback(struct timeval *tv)
 
 void time_manager_init(void)
 {
+    // set time of day from rtc then initilize sntp
     sntp_setoperatingmode(SNTP_OPMODE_POLL);
     sntp_setservername(0, "pool.ntp.org");
     sntp_set_time_sync_notification_cb(time_sync_callback);
