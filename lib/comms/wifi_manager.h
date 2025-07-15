@@ -8,6 +8,9 @@
 #define WIFI_SSID_MAX_LEN 32
 #define WIFI_PASS_MAX_LEN 64
 
+#define WIFI_MAX_RETRY 5 
+int retry_count;
+
 #define WIFI_MANAGER_QUEUE_LEN 5
 
 #define WIFI_CONNECTED_BIT BIT0
@@ -18,8 +21,6 @@ extern EventGroupHandle_t wifi_event_group;
 
 typedef enum
 {
-    WIFI_CMD_CONNECT,
-    WIFI_CMD_DISCONNECT,
     WIFI_CMD_SET_SSID_PASSWORD,
 } wifi_cmd_type_t;
 
@@ -41,6 +42,6 @@ typedef struct
 
 void wifi_manager_init(void);
 
-BaseType_t wifi_manager_send_cmd(wifi_cmd_t cmd);
+BaseType_t wifi_manager_send_cmd(wifi_cmd_t *cmd);
 
 #endif // WIFI_MANAGER_H
