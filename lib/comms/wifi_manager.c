@@ -96,8 +96,11 @@ void wifi_set_ssid_password(const char *ssid, const char *password)
     strncpy((char *)wifi_config.sta.ssid, ssid, sizeof(wifi_config.sta.ssid));
     strncpy((char *)wifi_config.sta.password, password, sizeof(wifi_config.sta.password));
 
-    retry_count = 0;
-    xEventGroupClearBits(wifi_event_group, WIFI_FAIL_BIT);
+    if (retry_count != 0 || xEventGroupGetBits(wifi_event_group) & WIFI_FAIL_BIT)
+    {
+        retry_count = 0;
+        xEventGroupClearBits(wifi_event_group, WIFI_FAIL_BIT);
+    }
 
     esp_wifi_set_config(WIFI_IF_STA, &wifi_config);
     esp_wifi_connect();
