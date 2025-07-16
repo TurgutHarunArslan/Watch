@@ -11,8 +11,8 @@
 static const char *TAG = "wifi_manager";
 #define WIFI_NAMESPACE "wifi_cfg"
 
-int retry_count = 0;
-bool retry_allowed = true;
+static int retry_count = 0;
+static bool retry_allowed = true;
 
 static EventGroupHandle_t wifi_event_group;
 static QueueHandle_t wifi_queue;
