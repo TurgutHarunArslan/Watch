@@ -9,6 +9,8 @@
         "array": "c",
         "string": "c",
         "string_view": "c",
-        "span": "c"
+        "span": "c",
+        "lvgl.h": "c",
+        "time.h": "c"
     }
 }

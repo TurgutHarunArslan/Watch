@@ -2,6 +2,8 @@
 #define APP_H
 
 
+#include <lvgl.h>
+
 /*
 init -> create new screen and set it to a variable
 deinit -> remove the screen and delete the data 
