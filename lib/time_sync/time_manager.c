@@ -1,5 +1,5 @@
 #include "esp_sntp.h"
-#include "wifi_manager.h"
+#include "wifi/wifi_manager.h"
 #include "esp_log.h"
 static const char *TAG = "wifi_manager";
 
