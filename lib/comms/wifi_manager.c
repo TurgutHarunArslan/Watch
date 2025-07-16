@@ -12,6 +12,7 @@ static const char *TAG = "wifi_manager";
 #define WIFI_NAMESPACE "wifi_cfg"
 
 int retry_count = 0;
+bool retry_allowed = true;
 
 static EventGroupHandle_t wifi_event_group;
 static QueueHandle_t wifi_queue;
@@ -66,7 +67,7 @@ static void wifi_ip_event_handler(void *arg, esp_event_base_t event_base,
             ESP_LOGI(TAG, "Wi-Fi disconnected");
             xEventGroupClearBits(wifi_event_group, WIFI_CONNECTED_BIT);
 
-            if (retry_count < WIFI_MAX_RETRY)
+            if (retry_count < WIFI_MAX_RETRY && retry_allowed)
             {
                 retry_count++;
                 ESP_LOGI(TAG, "Retrying Wi-Fi... (%d/%d)", retry_count, WIFI_MAX_RETRY);
@@ -92,6 +93,7 @@ static void wifi_ip_event_handler(void *arg, esp_event_base_t event_base,
 
 void wifi_set_ssid_password(const char *ssid, const char *password)
 {
+    retry_allowed = false;
     wifi_config_t wifi_config = {0};
     strncpy((char *)wifi_config.sta.ssid, ssid, sizeof(wifi_config.sta.ssid));
     strncpy((char *)wifi_config.sta.password, password, sizeof(wifi_config.sta.password));
@@ -104,6 +106,7 @@ void wifi_set_ssid_password(const char *ssid, const char *password)
 
     esp_wifi_set_config(WIFI_IF_STA, &wifi_config);
     esp_wifi_connect();
+    retry_allowed = true;
 
     save_credentials_from_wifi_config(&wifi_config);
 }

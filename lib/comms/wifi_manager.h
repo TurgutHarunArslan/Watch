@@ -10,6 +10,7 @@
 
 #define WIFI_MAX_RETRY 5 
 int retry_count;
+bool retry_allowed;
 
 #define WIFI_MANAGER_QUEUE_LEN 5
 
