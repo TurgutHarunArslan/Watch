@@ -23,20 +23,19 @@ static void switch_app(int index)
     current_app->init(current_app);
 }
 
-int init(void)
+void app_switcher_init(void)
 {
     lv_init();
 
     switch_app(0);
 
-    while (1)
-    {
-        if (current_app)
-        {
-            current_app->loop(current_app);
-        }
-        lv_task_handler();
-    }
+}
 
-    return 0;
+void app_switcher_loop(void)
+{
+    if (current_app)
+    {
+        current_app->loop(current_app);
+    }
+    lv_task_handler();
 }
